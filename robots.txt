@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://ai-legal-coaching-site-production.up.railway.app/sitemap.xml
