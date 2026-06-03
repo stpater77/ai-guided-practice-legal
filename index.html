@@ -518,6 +518,48 @@
         }
         .cta-box p { font-size: 1.1rem; color: #a1a1aa; max-width: 560px; margin: 0 auto 32px; line-height: 1.6; }
 
+        /* Audit Form */
+        .audit-form { max-width: 560px; margin: 0 auto 16px; }
+        .form-row { display: flex; gap: 16px; margin-bottom: 16px; }
+        .form-group { flex: 1; }
+        .form-group.full-width { margin-bottom: 16px; }
+        .audit-form input[type="text"],
+        .audit-form input[type="email"],
+        .audit-form select,
+        .audit-form textarea {
+            width: 100%; padding: 14px 16px; border: 1px solid #2a2a3a; border-radius: 8px;
+            background: #0f0f1a; color: #e4e4e7; font-size: 0.95rem; font-family: inherit;
+            transition: border-color 0.2s;
+        }
+        .audit-form input:focus, .audit-form select:focus, .audit-form textarea:focus {
+            outline: none; border-color: #d4af37;
+        }
+        .audit-form select { appearance: none; cursor: pointer; }
+        .audit-form textarea { resize: vertical; min-height: 80px; }
+        .audit-form .form-submit { width: 100%; margin-top: 8px; }
+        .form-disclaimer { font-size: 0.8rem !important; color: #71717a !important; margin-top: 12px !important; text-align: center; }
+        @media (max-width: 640px) {
+            .form-row { flex-direction: column; gap: 12px; }
+        }
+        .form-success { display: none; text-align: center; padding: 32px 0; }
+        .form-success h3 { color: #d4af37; font-size: 1.5rem; margin-bottom: 12px; }
+        .form-success p { color: #a1a1aa; font-size: 1.05rem; }
+
+        /* Calendly Option */
+        .calendly-option { text-align: center; margin-top: 20px; }
+        .calendly-divider {
+            display: flex; align-items: center; justify-content: center; gap: 16px;
+            color: #52525b; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.1em;
+            margin-bottom: 12px;
+        }
+        .calendly-divider::before, .calendly-divider::after {
+            content: ''; width: 40px; height: 1px; background: #2a2a3a;
+        }
+        .calendly-link {
+            display: inline-flex; align-items: center; gap: 8px;
+            font-size: 0.95rem !important;
+        }
+
         /* Footer */
         footer {
             padding: 40px 0; border-top: 1px solid rgba(212,175,55,0.1);
@@ -1079,7 +1121,48 @@
         <div class="cta-box">
             <h2>15 minutes. No cost. No risk.</h2>
             <p>Book a free AI Audit and I'll show you 3 specific workflows AI can automate for your practice this week. You'll leave the call knowing exactly where to start — even if you never work with me again.</p>
-            <a href="#book" class="btn-primary">Book Your Free AI Audit →</a>
+            <form class="audit-form" id="auditForm" action="https://formspree.io/f/xzdqpogk" method="POST">
+                <div class="form-row">
+                    <div class="form-group">
+                        <input type="text" name="name" placeholder="Full name *" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="email" name="email" placeholder="Email address *" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <input type="text" name="practice_area" placeholder="Practice area (e.g., Personal Injury, Family Law)">
+                    </div>
+                    <div class="form-group">
+                        <select name="plan_interest">
+                            <option value="" disabled selected>Which plan interests you?</option>
+                            <option value="AI Onboarding - $750">AI Onboarding — $750</option>
+                            <option value="AI Practice Builder - $1,500">AI Practice Builder — $1,500</option>
+                            <option value="Litigator's Edge - $2,500">Litigator's Edge — $2,500</option>
+                            <option value="Firm-Wide Integration">Firm-Wide Integration</option>
+                            <option value="Not sure yet">Not sure yet</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group full-width">
+                    <textarea name="message" rows="3" placeholder="Tell me about your biggest workflow frustration (optional)"></textarea>
+                </div>
+                <input type="hidden" name="_subject" value="Free AI Audit Request — Legal Professional">
+                <button type="submit" class="btn-primary form-submit">Book Your Free AI Audit →</button>
+            </form>
+            <p class="form-disclaimer">No spam. No sales pitch. Just 15 minutes of real value for your practice.</p>
+            <div class="form-success" id="formSuccess">
+                <h3>✓ Request received!</h3>
+                <p>I'll reach out within 24 hours to schedule your free AI Audit. Check your inbox.</p>
+            </div>
+            <div class="calendly-option">
+                <span class="calendly-divider">or</span>
+                <a href="https://calendly.com/sean-prolynkzllc/30min" class="btn-secondary calendly-link" target="_blank" rel="noopener">
+                    <svg style="width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                    Pick a time on my calendar →
+                </a>
+            </div>
         </div>
     </div>
 </section>
@@ -1114,6 +1197,38 @@
             if (!wasActive) item.classList.add('active');
         });
     });
+
+    // Audit form submission
+    const form = document.getElementById('auditForm');
+    const success = document.getElementById('formSuccess');
+    if (form) {
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = form.querySelector('.form-submit');
+            btn.textContent = 'Sending...';
+            btn.disabled = true;
+            try {
+                const res = await fetch(form.action, {
+                    method: 'POST',
+                    body: new FormData(form),
+                    headers: { 'Accept': 'application/json' }
+                });
+                if (res.ok) {
+                    form.style.display = 'none';
+                    document.querySelector('.form-disclaimer').style.display = 'none';
+                    success.style.display = 'block';
+                } else {
+                    btn.textContent = 'Book Your Free AI Audit →';
+                    btn.disabled = false;
+                    alert('Something went wrong. Please try again or email us directly.');
+                }
+            } catch {
+                btn.textContent = 'Book Your Free AI Audit →';
+                btn.disabled = false;
+                alert('Something went wrong. Please try again or email us directly.');
+            }
+        });
+    }
 </script>
 
 </body>
