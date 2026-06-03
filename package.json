@@ -1,0 +1,12 @@
+{
+  "name": "ai-legal-coaching-site",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "start": "serve -s . -l ${PORT:-3000}",
+    "dev": "serve -s . -l 8080"
+  },
+  "dependencies": {
+    "serve": "^14.2.0"
+  }
+}
